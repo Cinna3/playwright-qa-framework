@@ -11,10 +11,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        os: [ubuntu-latest, windows-latest]
         browser: [chromium, firefox, webkit]
-        include:
-          - os: ubuntu-latest
-          - os: windows-latest
 
     runs-on: ${{ matrix.os }}
     timeout-minutes: 15
