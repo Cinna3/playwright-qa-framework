@@ -7,3 +7,4 @@ logs/
 test-results/
 playwright-report/
 .env
+qa_framework.egg-info/

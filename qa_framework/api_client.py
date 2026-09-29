@@ -1,11 +1,10 @@
 """Reusable API client.
 
-Compared with repo 2's client, this one is built to be configuration-driven and
-to log every call, which is what you want once a framework is used by a team
-rather than a single person.
+Built to be configuration-driven and to log every call, which is what you want
+once a framework is used by a team rather than a single person.
 """
 
-from utils.logger import logger
+from qa_framework.logger import logger
 
 
 class ApiResponse:
@@ -62,6 +61,11 @@ class ApiClient:
 
     def search_products(self, query):
         return self._send("GET", "/products/search", params={"q": query})
+
+    def get_by_category(self, category):
+        return self._send(
+            "GET", f"/products/category/{category}", params={"limit": 0}
+        )
 
     def create_product(self, payload):
         return self._send("POST", "/products/add", data=payload)

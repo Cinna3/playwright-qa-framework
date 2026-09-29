@@ -11,7 +11,7 @@ of risk you need:
 
 import pytest
 
-from config.settings import settings
+from qa_framework import settings
 
 REQUIRED_FIELDS = ("id", "title", "price", "category", "rating", "stock", "sku")
 

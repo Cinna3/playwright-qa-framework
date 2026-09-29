@@ -8,6 +8,7 @@ and work the same way locally, in CI, and against staging.
 
 import os
 from dataclasses import dataclass, field
+from pathlib import Path
 
 
 def _env_flag(name: str, default: bool = False) -> bool:
@@ -24,7 +25,7 @@ class Settings:
     """Immutable settings object, created once and shared by every test."""
 
     api_base_url: str = os.getenv("API_BASE_URL", "https://dummyjson.com")
-    ui_base_url: str = os.getenv("UI_BASE_URL", "https://example.com")
+    ui_base_url: str = os.getenv("UI_BASE_URL", "")
     environment: str = os.getenv("ENVIRONMENT", "local")
     headless: bool = _env_flag("HEADLESS", True)
     # A slow network makes a 5s default assertion timeout look like a product
@@ -34,12 +35,23 @@ class Settings:
     api_budget_ms: int = int(os.getenv("API_BUDGET_MS", "5000"))
     # Never fail a CI run for a test that is already a documented defect.
     fail_on_xfail: bool = _env_flag("FAIL_ON_XFAIL", False)
+    # Directory holding the demo app served locally when no UI_BASE_URL is given.
+    demo_app_dir: Path = Path(os.getenv("DEMO_APP_DIR", "demo_app"))
     tags: list = field(default_factory=list)
+
+    @property
+    def ui_base_url_configured(self) -> bool:
+        """True only when UI_BASE_URL was explicitly set.
+
+        An empty string must not count, otherwise "unset" and "point me at a
+        real environment" become indistinguishable.
+        """
+        return bool(self.ui_base_url.strip())
 
     def summary(self) -> str:
         return (
             f"env={self.environment} api={self.api_base_url} "
-            f"ui={self.ui_base_url} headless={self.headless} "
+            f"ui={self.ui_base_url or 'demo app'} headless={self.headless} "
             f"timeout={self.default_timeout_ms}ms budget={self.api_budget_ms}ms"
         )
 
