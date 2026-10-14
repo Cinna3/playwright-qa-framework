@@ -12,10 +12,10 @@ an API suite are combined into something a team can run, extend and rely on.
 
 | Capability | Where to look |
 | --- | --- |
-| Environment-driven configuration | `config/settings.py` |
-| Reusable fixtures | `conftest.py` |
-| Logging to console and file | `utils/logger.py` |
-| API client layer | `clients/api_client.py` |
+| Environment-driven configuration | `qa_framework/settings.py` |
+| Reusable fixtures as a pytest plugin | `qa_framework/plugin.py` |
+| Logging to console and file | `qa_framework/logger.py` |
+| API client layer | `qa_framework/api_client.py` |
 | Risk-based test tagging | `pytest.ini` markers |
 | Parallel execution | `-n auto` via pytest-xdist |
 | Flakiness control | `--reruns 1` via pytest-rerunfailures |
@@ -27,17 +27,19 @@ an API suite are combined into something a team can run, extend and rely on.
 ## Architecture
 
 ```
-conftest.py
+qa_framework/plugin.py ..... pytest plugin: the fixtures every consumer inherits
    |
-   +-- ui_base_url ........ UI target (conftest maps base_url onto it)
    +-- api_client ......... shared HTTP client, closed after the session
    +-- timed_api_call ..... measures latency for budget checks
+   +-- ui_base_url ........ UI target: UI_BASE_URL or the bundled demo app
    +-- ui_page ............ page with the framework timeout applied
    +-- announce_settings .. prints the resolved config into the CI log
    |
-config/settings.py ......... environment variables -> one frozen settings object
-utils/logger.py ............ console + file logging
-clients/api_client.py ...... endpoint knowledge, kept out of the tests
+conftest.py ................ maps pytest-playwright's base_url onto ui_base_url
+qa_framework/settings.py ... environment variables -> one frozen settings object
+qa_framework/logger.py ..... console + file logging
+qa_framework/api_client.py . endpoint knowledge, kept out of the tests
+qa_framework/server.py ..... serves the demo app on a free port
 tests/api/ ................. contract, negative and performance tests
 tests/ui/ .................. browser capability and behaviour tests
 demo_app/ .................. deterministic app served locally
@@ -64,7 +66,7 @@ Reports land in `reports/report.html`, logs in `logs/test-run.log`.
 ## Configuration
 
 Every value comes from the environment, so the same tests run anywhere. Copy
-`config/.env.example` and export what you need:
+`qa_framework/.env.example` and export what you need:
 
 | Variable | Default | Purpose |
 | --- | --- | --- |
