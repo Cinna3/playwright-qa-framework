@@ -29,7 +29,7 @@ an API suite are combined into something a team can run, extend and rely on.
 ```
 conftest.py
    |
-   +-- base_url ........... UI target, overridden per environment
+   +-- ui_base_url ........ UI target (conftest maps base_url onto it)
    +-- api_client ......... shared HTTP client, closed after the session
    +-- timed_api_call ..... measures latency for budget checks
    +-- ui_page ............ page with the framework timeout applied

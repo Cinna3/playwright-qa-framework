@@ -38,11 +38,17 @@ def demo_app_server():
 
 
 @pytest.fixture(scope="session")
-def base_url(demo_app_server):
-    """UI target: UI_BASE_URL wins if set, else the bundled demo app."""
+def ui_base_url(request):
+    """UI target: UI_BASE_URL wins if set, else the bundled demo app.
+
+    Named ``ui_base_url`` rather than ``base_url`` on purpose. pytest-base-url
+    and pytest-playwright already own ``base_url``, and which plugin wins is
+    decided by registration order, not by intent. A project opts in by mapping
+    ``base_url`` onto this fixture from its own conftest, which always wins.
+    """
     if settings.ui_base_url_configured:
         return settings.ui_base_url
-    return demo_app_server
+    return request.getfixturevalue("demo_app_server")
 
 
 @pytest.fixture(scope="session")
