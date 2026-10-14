@@ -51,6 +51,7 @@ demo_app/ .................. deterministic app served locally
 python -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
+pip install -e .             # registers the qa_framework pytest plugin
 python -m playwright install chromium
 
 pytest                       # everything, in parallel
